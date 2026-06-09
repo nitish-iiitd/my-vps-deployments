@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: nitishsrivastava/hello-fastapi
+  repository: nitish2794/hello-fastapi
   tag: latest
   pullPolicy: Always
 
