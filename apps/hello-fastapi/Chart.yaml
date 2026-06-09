@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hello-fastapi
+description: Hello FastAPI app for OVH VPS k3s deployment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

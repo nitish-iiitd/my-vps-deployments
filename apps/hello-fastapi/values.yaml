@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: nitishsrivastava/hello-fastapi
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: traefik
+  host: hello.nitishsrivastava.dev
+  tlsSecretName: hello-fastapi-tls
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
