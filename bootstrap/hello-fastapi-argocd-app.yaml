@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-fastapi
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+    targetRevision: main
+    path: apps/hello-fastapi
+    helm:
+      releaseName: hello-fastapi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
