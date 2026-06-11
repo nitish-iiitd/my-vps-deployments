@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: nitish2794/mcp-tutorial
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: traefik
+  host: mcp-tutorial.nitishsrivastava.dev
+  tlsSecretName: mcp-tutorial-tls
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi
