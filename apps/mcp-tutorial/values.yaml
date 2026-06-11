@@ -1,21 +1,17 @@
 replicaCount: 1
-
 image:
   repository: nitish2794/mcp-tutorial
-  tag: latest
-  pullPolicy: Always
-
+  tag: "11062026_114853"
+  pullPolicy: IfNotPresent
 service:
   type: ClusterIP
   port: 80
   targetPort: 8000
-
 ingress:
   enabled: true
   className: traefik
   host: mcp-tutorial.nitishsrivastava.dev
   tlsSecretName: mcp-tutorial-tls
-
 resources:
   requests:
     cpu: 50m
