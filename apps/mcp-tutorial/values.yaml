@@ -10,7 +10,7 @@ service:
 ingress:
   enabled: true
   className: traefik
-  host: mcp-tutorial.nitishsrivastava.dev
+  host: mcp-tutorial.projects.nitishsrivastava.dev
   tlsSecretName: mcp-tutorial-tls
 resources:
   requests:
