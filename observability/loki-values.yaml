@@ -65,3 +65,9 @@ lokiCanary:
 
 test:
   enabled: false
+
+chunksCache:
+  enabled: false
+
+resultsCache:
+  enabled: false
