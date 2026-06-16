@@ -19,3 +19,12 @@ resources:
   limits:
     cpu: 300m
     memory: 256Mi
+observability:
+  enabled: true
+  prometheus:
+    scrape: true
+    path: /metrics
+    port: "8000"
+  otel:
+    serviceName: weather-mcp-demo
+    endpoint: http://grafana-alloy.observability.svc.cluster.local:4318
