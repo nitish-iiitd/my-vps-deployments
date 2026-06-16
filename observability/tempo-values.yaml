@@ -1,0 +1,42 @@
+tempo:
+  retention: 24h
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+        grpc:
+          endpoint: 0.0.0.0:4317
+
+persistence:
+  enabled: true
+  size: 10Gi
+  storageClassName: local-path
+
+service:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: obs-obs-basic-auth@kubernetescrd
+  hosts:
+    - host: tempo.obs.nitishsrivastava.dev
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: tempo-obs-tls
+      hosts:
+        - tempo.obs.nitishsrivastava.dev
