@@ -1,0 +1,48 @@
+adminUser: admin
+adminPassword: Nitish@grafana26
+
+persistence:
+  enabled: true
+  storageClassName: local-path
+  size: 2Gi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 768Mi
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: obs-obs-basic-auth@kubernetescrd
+  hosts:
+    - grafana.obs.nitishsrivastava.dev
+  tls:
+    - secretName: grafana-obs-tls
+      hosts:
+        - grafana.obs.nitishsrivastava.dev
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.obs.svc.cluster.local
+        isDefault: true
+
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.obs.svc.cluster.local
+
+      - name: Tempo
+        type: tempo
+        access: proxy
+        url: http://tempo.obs.svc.cluster.local:3200
