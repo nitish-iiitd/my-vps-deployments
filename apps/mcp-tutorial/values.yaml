@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
   repository: nitish2794/mcp-tutorial
-  tag: "16062026_210740"
+  tag: "16062026_214707"
   pullPolicy: IfNotPresent
 service:
   type: ClusterIP
