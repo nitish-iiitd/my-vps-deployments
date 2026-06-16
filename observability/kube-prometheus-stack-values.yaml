@@ -17,6 +17,12 @@ grafana:
         hosts:
           - grafana.obs.nitishsrivastava.dev
 
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+    patch:
+      enabled: false
+
 prometheus:
   prometheusSpec:
     retention: 7d
