@@ -13,6 +13,9 @@ prometheus-node-exporter:
 server:
   enabled: true
 
+  extraArgs:
+    web.enable-remote-write-receiver: ""
+
   retention: "7d"
 
   persistentVolume:
