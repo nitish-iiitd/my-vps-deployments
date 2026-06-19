@@ -3,24 +3,22 @@ backend:
   image:
     repository: nitish2794/triply-backend
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "sha-9901e2c8196cdaee07a08da2d104740c9da1ca5a"
   service:
     type: ClusterIP
     port: 8000
   env:
     otelServiceName: "triply-backend"
     otelExporterOtlpEndpoint: "http://alloy.observability.svc.cluster.local:4318"
-
 frontend:
   replicaCount: 1
   image:
     repository: nitish2794/triply-frontend
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "sha-9901e2c8196cdaee07a08da2d104740c9da1ca5a"
   service:
     type: ClusterIP
     port: 8080
-
 ingress:
   enabled: true
   className: "nginx"
