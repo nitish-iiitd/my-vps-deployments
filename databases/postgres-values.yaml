@@ -1,0 +1,28 @@
+auth:
+  username: appuser
+  database: appdb
+  existingSecret: postgres-auth
+  secretKeys:
+    adminPasswordKey: postgres-password
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 10Gi
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 700m
+      memory: 1Gi
+
+  service:
+    type: ClusterIP
+
+architecture: standalone
+
+metrics:
+  enabled: true
