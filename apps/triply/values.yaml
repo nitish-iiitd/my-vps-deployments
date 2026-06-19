@@ -1,7 +1,7 @@
 backend:
   replicaCount: 1
   image:
-    repository: ghcr.io/nitish-iiitd/triply/triply-backend
+    repository: nitish2794/triply-backend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
@@ -14,7 +14,7 @@ backend:
 frontend:
   replicaCount: 1
   image:
-    repository: ghcr.io/nitish-iiitd/triply/triply-frontend
+    repository: nitish2794/triply-frontend
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
