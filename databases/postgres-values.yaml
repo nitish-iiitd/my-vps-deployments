@@ -1,9 +1,12 @@
+architecture: standalone
+
 auth:
   username: appuser
   database: appdb
   existingSecret: postgres-auth
   secretKeys:
     adminPasswordKey: postgres-password
+    userPasswordKey: password
 
 primary:
   persistence:
@@ -21,8 +24,6 @@ primary:
 
   service:
     type: ClusterIP
-
-architecture: standalone
 
 metrics:
   enabled: true
