@@ -1,19 +1,27 @@
-replicaCount: 1
+backend:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/nitish-iiitd/triply/triply-backend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 8000
+  env:
+    otelServiceName: "triply-backend"
+    otelExporterOtlpEndpoint: "http://alloy.observability.svc.cluster.local:4318"
 
-image:
-  repository: triply-backend
-  pullPolicy: IfNotPresent
-  tag: "latest"
-
-service:
-  type: ClusterIP
-  port: 8000
+frontend:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/nitish-iiitd/triply/triply-frontend
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 8080
 
 ingress:
   enabled: true
   className: "nginx"
   host: triply.projects.nitishsrivastava.dev
-
-env:
-  otelServiceName: "triply-backend"
-  otelExporterOtlpEndpoint: "http://alloy.observability.svc.cluster.local:4318"

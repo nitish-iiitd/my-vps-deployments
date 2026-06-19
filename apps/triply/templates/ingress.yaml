@@ -19,11 +19,18 @@ spec:
     - host: {{ .Values.ingress.host }}
       http:
         paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "triply.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: {{ include "triply.fullname" . }}
+                name: {{ include "triply.fullname" . }}-frontend
                 port:
-                  number: {{ .Values.service.port }}
+                  number: {{ .Values.frontend.service.port }}
 {{- end }}
