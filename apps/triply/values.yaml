@@ -21,5 +21,6 @@ frontend:
     port: 8080
 ingress:
   enabled: true
-  className: "nginx"
+  className: traefik
   host: triply.projects.nitishsrivastava.dev
+  tlsSecretName: triply-triply-tls
