@@ -19,7 +19,7 @@ ingress:
   ingressClassName: traefik
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    traefik.ingress.kubernetes.io/router.middlewares: obs-obs-basic-auth@kubernetescrd
+    #traefik.ingress.kubernetes.io/router.middlewares: obs-obs-basic-auth@kubernetescrd
   hosts:
     - grafana.obs.nitishsrivastava.dev
   tls:
