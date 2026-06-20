@@ -9,7 +9,7 @@ backend:
     port: 8000
   env:
     otelServiceName: "triply-backend"
-    otelExporterOtlpEndpoint: "http://alloy.observability.svc.cluster.local:4318"
+    otelExporterOtlpEndpoint: "http://alloy.obs.svc.cluster.local:4318"
 frontend:
   replicaCount: 1
   image:
