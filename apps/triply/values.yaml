@@ -22,5 +22,5 @@ frontend:
 ingress:
   enabled: true
   className: traefik
-  host: triply.projects.nitishsrivastava.dev
+  host: wanderist.projects.nitishsrivastava.dev
   tlsSecretName: triply-triply-tls
