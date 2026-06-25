@@ -31,6 +31,38 @@ spec:
                 secretKeyRef:
                   name: triply-db-dsn
                   key: dsn
+            - name: AUTH_FLOW
+              value: {{ .Values.backend.auth.flow | quote }}
+            {{- if eq .Values.backend.auth.flow "supabase" }}
+            - name: SUPABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: triply-supabase-auth
+                  key: supabase-url
+            - name: SUPABASE_ANON_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: triply-supabase-auth
+                  key: supabase-anon-key
+            - name: SUPABASE_SERVICE_ROLE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: triply-supabase-auth
+                  key: supabase-service-role-key
+            - name: SUPABASE_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: triply-supabase-auth
+                  key: supabase-jwt-secret
+            - name: SUPABASE_JWT_AUDIENCE
+              value: "authenticated"
+            - name: APP_BASE_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: AUTH_CALLBACK_URL
+              value: "https://{{ .Values.ingress.host }}/api/auth/callback"
+            - name: PASSWORD_RESET_REDIRECT_URL
+              value: "https://{{ .Values.ingress.host }}/reset-password"
+            {{- end }}
             - name: OTEL_SERVICE_NAME
               value: {{ .Values.backend.env.otelServiceName }}
             - name: OTEL_EXPORTER_OTLP_ENDPOINT

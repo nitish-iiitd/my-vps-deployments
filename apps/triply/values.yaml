@@ -10,6 +10,8 @@ backend:
   env:
     otelServiceName: "triply-backend"
     otelExporterOtlpEndpoint: "http://alloy.obs.svc.cluster.local:4318"
+  auth:
+    flow: "supabase"
 frontend:
   replicaCount: 1
   image:
