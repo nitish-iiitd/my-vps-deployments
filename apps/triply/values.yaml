@@ -3,7 +3,7 @@ backend:
   image:
     repository: nitish2794/triply-backend
     pullPolicy: IfNotPresent
-    tag: "sha-02029b46d12237dbb90fcaca09f87de2358e2b8a"
+    tag: "sha-ea91a74efafff6bd24dad783f7530531a91eb046"
   service:
     type: ClusterIP
     port: 8000
@@ -15,7 +15,7 @@ frontend:
   image:
     repository: nitish2794/triply-frontend
     pullPolicy: IfNotPresent
-    tag: "sha-02029b46d12237dbb90fcaca09f87de2358e2b8a"
+    tag: "sha-ea91a74efafff6bd24dad783f7530531a91eb046"
   service:
     type: ClusterIP
     port: 8080
