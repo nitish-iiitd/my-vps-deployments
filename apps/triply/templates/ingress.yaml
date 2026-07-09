@@ -26,6 +26,31 @@ spec:
                 name: {{ include "triply.fullname" . }}-backend
                 port:
                   number: {{ .Values.backend.service.port }}
+          # MCP endpoint + OAuth discovery are served by the backend at the root
+          # (not under /api), so they need explicit routes. The two well-known
+          # paths are listed individually to avoid capturing
+          # /.well-known/acme-challenge used by cert-manager.
+          - path: /mcp
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "triply.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
+          - path: /.well-known/oauth-authorization-server
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "triply.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
+          - path: /.well-known/oauth-protected-resource
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "triply.fullname" . }}-backend
+                port:
+                  number: {{ .Values.backend.service.port }}
           - path: /
             pathType: Prefix
             backend:
