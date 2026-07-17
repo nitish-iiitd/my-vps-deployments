@@ -1,0 +1,6 @@
+apiVersion: v2
+name: adscope
+description: AdScope - multi-LLM ad placement recommendation tool for OVH VPS k3s deployment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

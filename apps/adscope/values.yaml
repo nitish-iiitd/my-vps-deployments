@@ -1,0 +1,55 @@
+# AdScope runs as a single replica by design: campaigns are stored in SQLite on a
+# node-local (local-path) volume, which only one pod can mount. There is no
+# replicaCount value on purpose - scaling this up would corrupt the database.
+
+image:
+  repository: nitish2794/adscope
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  enabled: true
+  className: traefik
+  host: adscope.projects.nitishsrivastava.dev
+  tlsSecretName: adscope-tls
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 1Gi
+  mountPath: /app/data
+
+app:
+  name: AdScope
+  env: production
+  debug: false
+  username: admin
+  # Demo mode returns mocked recommendations and calls no external APIs.
+  # Keep false in production; set true to run without provider API keys.
+  demoMode: false
+  # OpenRouter needs ~70s to return 10 recommendations, so 60 cuts it off.
+  llmTimeoutSeconds: 120
+
+# Each provider is enabled only when its key exists in the adscope-secrets Secret.
+# The app works with any subset of these configured.
+providers:
+  geminiModel: gemini-3.5-flash
+  groqModel: llama-3.3-70b-versatile
+  openrouterModel: meta-llama/llama-3.3-70b-instruct
+
+# Secret holding credentials and provider API keys. Created out of band -
+# see this chart's README. Never commit these values.
+secretName: adscope-secrets
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

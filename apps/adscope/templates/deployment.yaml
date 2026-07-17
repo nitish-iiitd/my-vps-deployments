@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  # Pinned to 1: SQLite lives on a ReadWriteOnce local-path volume that only one
+  # pod can mount. Recreate (not RollingUpdate) because the new pod cannot attach
+  # the volume until the old one releases it - a rolling update would deadlock.
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      securityContext:
+        # The image runs as uid 1000; fsGroup makes the mounted volume writable by it.
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: adscope
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: APP_NAME
+              value: {{ .Values.app.name | quote }}
+            - name: APP_ENV
+              value: {{ .Values.app.env | quote }}
+            - name: DEBUG
+              value: {{ .Values.app.debug | quote }}
+            - name: APP_USERNAME
+              value: {{ .Values.app.username | quote }}
+            - name: APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: app-password
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: session-secret
+            # Always served behind HTTPS via Traefik + cert-manager.
+            - name: COOKIE_SECURE
+              value: "true"
+            - name: DATABASE_URL
+              value: "sqlite:///{{ .Values.persistence.mountPath }}/adscope.db"
+            - name: DEMO_MODE
+              value: {{ .Values.app.demoMode | quote }}
+            - name: LLM_TIMEOUT_SECONDS
+              value: {{ .Values.app.llmTimeoutSeconds | quote }}
+            # Provider keys are optional: a key absent from the Secret leaves the
+            # env var unset, which disables that provider in the app.
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: gemini-api-key
+                  optional: true
+            - name: GEMINI_MODEL
+              value: {{ .Values.providers.geminiModel | quote }}
+            - name: GROQ_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: groq-api-key
+                  optional: true
+            - name: GROQ_MODEL
+              value: {{ .Values.providers.groqModel | quote }}
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: openrouter-api-key
+                  optional: true
+            - name: OPENROUTER_MODEL
+              value: {{ .Values.providers.openrouterModel | quote }}
+          {{- if .Values.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 3
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 20
+            # A campaign holds the request while the LLMs respond, so allow well
+            # over llmTimeoutSeconds before declaring the pod dead.
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
+      {{- end }}
