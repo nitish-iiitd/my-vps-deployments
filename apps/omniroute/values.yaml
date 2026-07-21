@@ -1,0 +1,46 @@
+# OmniRoute stores SQLite data on a ReadWriteOnce volume, so keep it as a
+# single replica and update with Recreate.
+image:
+  repository: diegosouzapw/omniroute
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 20128
+
+ingress:
+  enabled: true
+  className: traefik
+  host: omniroute.tools.nitishsrivastava.dev
+  tlsSecretName: omniroute-tls
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 5Gi
+  mountPath: /app/data
+
+secretName: omniroute-secrets
+
+app:
+  port: 20128
+  hostname: 0.0.0.0
+  nodeEnv: production
+  storageDriver: sqlite
+  requireApiKey: false
+  allowApiKeyReveal: false
+  appLogToFile: true
+  authCookieSecure: true
+  omnirouteMemoryMb: 512
+  promptCacheMaxSize: 50
+  semanticCacheMaxSize: 100
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi

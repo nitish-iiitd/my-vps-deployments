@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: omniroute
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: PORT
+              value: {{ .Values.app.port | quote }}
+            - name: HOSTNAME
+              value: {{ .Values.app.hostname | quote }}
+            - name: NODE_ENV
+              value: {{ .Values.app.nodeEnv | quote }}
+            - name: DATA_DIR
+              value: {{ .Values.persistence.mountPath | quote }}
+            - name: STORAGE_DRIVER
+              value: {{ .Values.app.storageDriver | quote }}
+            - name: BASE_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: NEXT_PUBLIC_BASE_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: REQUIRE_API_KEY
+              value: {{ .Values.app.requireApiKey | quote }}
+            - name: ALLOW_API_KEY_REVEAL
+              value: {{ .Values.app.allowApiKeyReveal | quote }}
+            - name: APP_LOG_TO_FILE
+              value: {{ .Values.app.appLogToFile | quote }}
+            - name: AUTH_COOKIE_SECURE
+              value: {{ .Values.app.authCookieSecure | quote }}
+            - name: OMNIROUTE_MEMORY_MB
+              value: {{ .Values.app.omnirouteMemoryMb | quote }}
+            - name: PROMPT_CACHE_MAX_SIZE
+              value: {{ .Values.app.promptCacheMaxSize | quote }}
+            - name: SEMANTIC_CACHE_MAX_SIZE
+              value: {{ .Values.app.semanticCacheMaxSize | quote }}
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: jwt-secret
+            - name: INITIAL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: initial-password
+            - name: API_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: api-key-secret
+            - name: STORAGE_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: storage-encryption-key
+            - name: STORAGE_ENCRYPTION_KEY_VERSION
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: storage-encryption-key-version
+            - name: MACHINE_ID_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: machine-id-salt
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 3
+            failureThreshold: 20
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
