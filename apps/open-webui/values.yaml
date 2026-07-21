@@ -1,0 +1,46 @@
+# Open WebUI keeps chats, users, and config in SQLite by default, so keep it as
+# a single replica on local storage unless you move it to Postgres.
+image:
+  repository: ghcr.io/open-webui/open-webui
+  tag: main
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: traefik
+  host: openwebui.tools.nitishsrivastava.dev
+  tlsSecretName: open-webui-tls
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 10Gi
+  mountPath: /app/backend/data
+
+secretName: open-webui-secrets
+
+app:
+  webuiName: Open WebUI
+  webuiAuth: true
+  enableSignup: true
+  enableLoginForm: true
+  enablePersistentConfig: true
+  enableOpenaiApi: true
+  enableOllamaApi: false
+  openaiApiBaseUrl: https://omniroute.tools.nitishsrivastava.dev/v1
+  authCookieSecure: true
+  sessionCookieSecure: true
+  versionUpdateCheck: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi

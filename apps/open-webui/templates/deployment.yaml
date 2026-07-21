@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: open-webui
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: PORT
+              value: {{ .Values.service.targetPort | quote }}
+            - name: DATA_DIR
+              value: {{ .Values.persistence.mountPath | quote }}
+            - name: WEBUI_URL
+              value: "https://{{ .Values.ingress.host }}"
+            - name: WEBUI_NAME
+              value: {{ .Values.app.webuiName | quote }}
+            - name: WEBUI_AUTH
+              value: {{ .Values.app.webuiAuth | quote }}
+            - name: ENABLE_SIGNUP
+              value: {{ .Values.app.enableSignup | quote }}
+            - name: ENABLE_LOGIN_FORM
+              value: {{ .Values.app.enableLoginForm | quote }}
+            - name: ENABLE_PERSISTENT_CONFIG
+              value: {{ .Values.app.enablePersistentConfig | quote }}
+            - name: ENABLE_OPENAI_API
+              value: {{ .Values.app.enableOpenaiApi | quote }}
+            - name: ENABLE_OLLAMA_API
+              value: {{ .Values.app.enableOllamaApi | quote }}
+            - name: OPENAI_API_BASE_URL
+              value: {{ .Values.app.openaiApiBaseUrl | quote }}
+            - name: WEBUI_AUTH_COOKIE_SECURE
+              value: {{ .Values.app.authCookieSecure | quote }}
+            - name: WEBUI_SESSION_COOKIE_SECURE
+              value: {{ .Values.app.sessionCookieSecure | quote }}
+            - name: ENABLE_VERSION_UPDATE_CHECK
+              value: {{ .Values.app.versionUpdateCheck | quote }}
+            - name: WEBUI_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: webui-secret-key
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: openai-api-key
+            - name: WEBUI_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: admin-email
+            - name: WEBUI_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: admin-password
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 3
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
