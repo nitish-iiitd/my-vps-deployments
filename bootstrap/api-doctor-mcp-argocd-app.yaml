@@ -1,0 +1,25 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: api-doctor-mcp
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+    targetRevision: main
+    path: apps/api-doctor-mcp
+    helm:
+      releaseName: api-doctor-mcp
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

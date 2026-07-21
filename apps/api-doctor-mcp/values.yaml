@@ -1,0 +1,35 @@
+replicaCount: 1
+
+image:
+  repository: nitish2794/api-doctor-mcp
+  # Managed by the api-doctor-mcp repo build-push workflow, which rewrites this to
+  # sha-<commit> on every push to main. Edit by hand only to pin or roll back.
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8085
+
+container:
+  port: 8085
+
+ingress:
+  enabled: true
+  className: traefik
+  host: api-doctor-mcp.projects.nitishsrivastava.dev
+  tlsSecretName: api-doctor-mcp-tls
+
+app:
+  name: API Doctor MCP
+  version: 0.1.0
+  mcpPath: /mcp
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

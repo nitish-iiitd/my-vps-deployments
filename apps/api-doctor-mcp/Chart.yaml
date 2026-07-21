@@ -1,0 +1,6 @@
+apiVersion: v2
+name: api-doctor-mcp
+description: Stateless MCP server for OpenAPI and JSON Schema validation
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
