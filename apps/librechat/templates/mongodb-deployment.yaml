@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-mongodb
+  labels:
+    app: {{ .Release.Name }}-mongodb
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-mongodb
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-mongodb
+    spec:
+      containers:
+        - name: mongodb
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          args:
+            - --bind_ip_all
+          ports:
+            - name: mongodb
+              containerPort: {{ .Values.mongodb.service.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.mongodb.persistence.mountPath }}
+          startupProbe:
+            tcpSocket:
+              port: mongodb
+            periodSeconds: 3
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: mongodb
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: mongodb
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.mongodbResources | nindent 12 }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-mongodb-data

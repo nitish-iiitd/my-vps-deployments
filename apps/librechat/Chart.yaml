@@ -1,0 +1,6 @@
+apiVersion: v2
+name: librechat
+description: LibreChat - chat UI for OmniRoute on k3s
+type: application
+version: 0.1.0
+appVersion: "0.8.5-rc1"

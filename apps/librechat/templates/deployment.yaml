@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: librechat
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: HOST
+              value: {{ .Values.app.host | quote }}
+            - name: PORT
+              value: {{ .Values.app.port | quote }}
+            - name: TRUST_PROXY
+              value: {{ .Values.app.trustProxy | quote }}
+            - name: DOMAIN_CLIENT
+              value: "https://{{ .Values.ingress.host }}"
+            - name: DOMAIN_SERVER
+              value: "https://{{ .Values.ingress.host }}"
+            - name: CONFIG_PATH
+              value: {{ .Values.app.configPath | quote }}
+            - name: ALLOW_REGISTRATION
+              value: {{ .Values.app.allowRegistration | quote }}
+            - name: LOG_TO_FILE
+              value: {{ .Values.app.logToFile | quote }}
+            - name: DEBUG_LOGGING
+              value: {{ .Values.app.debugLogging | quote }}
+            - name: DEBUG_CONSOLE
+              value: {{ .Values.app.debugConsole | quote }}
+            - name: MONGO_URI
+              value: "mongodb://{{ .Release.Name }}-mongodb:{{ .Values.mongodb.service.port }}/LibreChat"
+            - name: CREDS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: creds-key
+            - name: CREDS_IV
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: creds-iv
+            - name: OMNIROUTE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretName }}
+                  key: omniroute-api-key
+          volumeMounts:
+            - name: config
+              mountPath: /app/librechat.yaml
+              subPath: librechat.yaml
+          startupProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 3
+            failureThreshold: 40
+          readinessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-config

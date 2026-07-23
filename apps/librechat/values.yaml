@@ -1,0 +1,60 @@
+# LibreChat needs MongoDB. This chart keeps the stack minimal by running an
+# internal MongoDB and disabling optional services like Meilisearch and RAG.
+image:
+  repository: ghcr.io/danny-avila/librechat
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3080
+
+ingress:
+  enabled: true
+  className: traefik
+  host: librechat.tools.nitishsrivastava.dev
+  tlsSecretName: librechat-tls
+
+secretName: librechat-secrets
+
+app:
+  host: 0.0.0.0
+  port: 3080
+  trustProxy: 1
+  allowRegistration: true
+  logToFile: true
+  debugLogging: false
+  debugConsole: false
+  configPath: /app/librechat.yaml
+  defaultModel: gemini-2.5-flash
+  titleModel: gemini-2.5-flash
+
+mongodb:
+  image:
+    repository: mongo
+    tag: "7.0"
+    pullPolicy: IfNotPresent
+  service:
+    port: 27017
+  persistence:
+    enabled: true
+    storageClass: local-path
+    size: 10Gi
+    mountPath: /data/db
+
+resources:
+  requests:
+    cpu: 150m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 2Gi
+
+mongodbResources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
