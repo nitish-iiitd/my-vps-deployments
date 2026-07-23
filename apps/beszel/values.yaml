@@ -1,0 +1,39 @@
+# Beszel hub persists PocketBase data locally. Keep it single-replica unless you
+# deliberately redesign storage / HA around it.
+image:
+  repository: henrygd/beszel
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8090
+
+ingress:
+  enabled: true
+  className: traefik
+  host: beszel.tools.nitishsrivastava.dev
+  tlsSecretName: beszel-tls
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 5Gi
+  mountPath: /beszel_data
+
+app:
+  url: https://beszel.tools.nitishsrivastava.dev
+  checkUpdates: false
+  containerDetails: true
+  disablePasswordAuth: false
+  mfaOtp: false
+  shareAllSystems: false
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
