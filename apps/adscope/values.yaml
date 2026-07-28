@@ -4,7 +4,7 @@
 
 image:
   repository: nitish2794/adscope
-  tag: sha-3060d5eb26e31ae0cb61e5a08bf46e3cbb33eee8
+  tag: sha-8c97d0390f6936033c8e76bcb251b5942873788c
   pullPolicy: Always
 service:
   type: ClusterIP
