@@ -1,0 +1,33 @@
+# Archemist (archemist.app). The chart lives in the archemist repo, not here.
+#
+# targetRevision and image.tag are rewritten by the archemist repo's
+# build-push workflow on every deploy, so they always name the same commit.
+# Edit them by hand only to roll back (or revert that commit).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: archemist
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: git@github.com:nitish-iiitd/archemist.git
+    targetRevision: main
+    path: deploy/helm/archemist
+    helm:
+      releaseName: archemist
+      parameters:
+        - name: image.tag
+          value: latest
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
