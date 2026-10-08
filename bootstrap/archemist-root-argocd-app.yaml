@@ -1,0 +1,29 @@
+# Applied once by hand. After that, Argo watches bootstrap/archemist-argocd-app.yaml
+# in this repo and applies every change to it, so deploying Archemist never needs
+# an argocd or kubectl command again.
+#
+# Deliberately limited to that one file: the other apps' Application files in
+# bootstrap/ stay manually applied and are untouched by this.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: archemist-root
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+    targetRevision: main
+    path: bootstrap
+    directory:
+      include: archemist-argocd-app.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
