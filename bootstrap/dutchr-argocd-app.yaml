@@ -1,5 +1,3 @@
-# Copy to bootstrap/ in my-vps-deployments. CI updates the revision and both tags.
-# Do not apply the root until production secrets and the first image build exist.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -9,15 +7,23 @@ spec:
   project: default
   source:
     repoURL: git@github.com:nitish-iiitd/dutchr.git
-    targetRevision: main
+    targetRevision: 08c7704f5a1dd362f92ab978495dad12da55d591
     path: Deployment/Helm/Dutchr
     helm:
       releaseName: dutchr
       parameters:
-        - name: frontend.image.tag
-          value: awaiting-first-build
-        - name: backend.image.tag
-          value: awaiting-first-build
+      - name: frontend.image.repository
+        value: ghcr.io/nitish-iiitd/dutchr-frontend-v2
+        forceString: true
+      - name: frontend.image.tag
+        value: sha-08c7704f5a1dd362f92ab978495dad12da55d591
+        forceString: true
+      - name: backend.image.repository
+        value: ghcr.io/nitish-iiitd/dutchr-backend
+        forceString: true
+      - name: backend.image.tag
+        value: sha-08c7704f5a1dd362f92ab978495dad12da55d591
+        forceString: true
   destination:
     server: https://kubernetes.default.svc
     namespace: apps
@@ -26,4 +32,4 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+    - CreateNamespace=true
