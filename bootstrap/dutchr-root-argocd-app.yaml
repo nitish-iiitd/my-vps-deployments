@@ -1,0 +1,21 @@
+# Applied once after production prerequisites are ready. Only manages Dutchr.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dutchr-root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+    targetRevision: main
+    path: bootstrap
+    directory:
+      include: dutchr-argocd-app.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

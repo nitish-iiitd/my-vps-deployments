@@ -1,0 +1,29 @@
+# Copy to bootstrap/ in my-vps-deployments. CI updates the revision and both tags.
+# Do not apply the root until production secrets and the first image build exist.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dutchr
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:nitish-iiitd/dutchr.git
+    targetRevision: main
+    path: Deployment/Helm/Dutchr
+    helm:
+      releaseName: dutchr
+      parameters:
+        - name: frontend.image.tag
+          value: awaiting-first-build
+        - name: backend.image.tag
+          value: awaiting-first-build
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
