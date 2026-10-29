@@ -12,6 +12,8 @@ spec:
     helm:
       releaseName: dutchr
       parameters:
+      - name: backend.assistantProvider
+        value: gemini
       - name: frontend.image.repository
         value: ghcr.io/nitish-iiitd/dutchr-frontend-v2
         forceString: true
