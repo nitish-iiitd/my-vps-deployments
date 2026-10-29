@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: git@github.com:nitish-iiitd/dutchr.git
-    targetRevision: b1824c8e33946dbf6ba1d8276cd1495c782c8b5d
+    targetRevision: c5f485e885924deb2f696323bb00ef8f15482b21
     path: Deployment/Helm/Dutchr
     helm:
       releaseName: dutchr
@@ -16,13 +16,13 @@ spec:
         value: ghcr.io/nitish-iiitd/dutchr-frontend-v2
         forceString: true
       - name: frontend.image.tag
-        value: sha-b1824c8e33946dbf6ba1d8276cd1495c782c8b5d
+        value: sha-c5f485e885924deb2f696323bb00ef8f15482b21
         forceString: true
       - name: backend.image.repository
         value: ghcr.io/nitish-iiitd/dutchr-backend
         forceString: true
       - name: backend.image.tag
-        value: sha-b1824c8e33946dbf6ba1d8276cd1495c782c8b5d
+        value: sha-c5f485e885924deb2f696323bb00ef8f15482b21
         forceString: true
   destination:
     server: https://kubernetes.default.svc
