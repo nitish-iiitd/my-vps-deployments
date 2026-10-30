@@ -13,7 +13,7 @@ spec:
       releaseName: dutchr
       parameters:
       - name: backend.assistantProvider
-        value: groq
+        value: gemini
       - name: frontend.image.repository
         value: ghcr.io/nitish-iiitd/dutchr-frontend-v2
         forceString: true
