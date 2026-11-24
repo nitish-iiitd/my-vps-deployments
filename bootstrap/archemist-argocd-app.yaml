@@ -12,13 +12,13 @@ spec:
   project: default
   source:
     repoURL: git@github.com:nitish-iiitd/archemist.git
-    targetRevision: cdc1f6f45d9cda74fca7cfc3cb5a351be33138c7
+    targetRevision: 04636061a9dc94020817b06bf6705eccbfa56e22
     path: deploy/helm/archemist
     helm:
       releaseName: archemist
       parameters:
         - name: image.tag
-          value: sha-cdc1f6f45d9cda74fca7cfc3cb5a351be33138c7
+          value: sha-04636061a9dc94020817b06bf6705eccbfa56e22
   destination:
     server: https://kubernetes.default.svc
     namespace: apps
