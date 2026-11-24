@@ -1,0 +1,5 @@
+# Test app. All options: charts/app/values.yaml
+image: nitish2794/hello-fastapi
+tag: latest
+port: 8000
+domain: hello.apps.nitishsrivastava.dev

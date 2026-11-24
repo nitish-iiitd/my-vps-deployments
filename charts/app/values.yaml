@@ -1,0 +1,43 @@
+# Defaults for every app. An app's own values.yaml overrides any of these.
+
+# Container image (without tag), e.g. nitish2794/hello-fastapi
+image: ""
+# Image tag. CI sets this to sha-<commit> on every push.
+tag: latest
+
+# Port the container listens on.
+port: 8000
+
+# How many copies to run.
+replicas: 1
+
+# Public hostname. Gets HTTPS automatically. Leave empty to keep the app internal.
+domain: ""
+
+# Health check URL path, e.g. /health. When set, a copy only gets traffic once it answers,
+# and is restarted if it stops answering.
+healthPath: ""
+
+# Plain settings, passed as environment variables.
+env: {}
+#  LOG_LEVEL: info
+
+# Secret settings, encrypted with scripts/seal-secret.sh (safe to commit).
+# Also passed as environment variables.
+secrets: {}
+#  OPENAI_API_KEY: AgB4f...
+
+# Name of an existing image pull secret, for private images.
+imagePullSecret: ""
+
+# Persistent disk. Leave size empty for none.
+storage:
+  size: ""          # e.g. 1Gi
+  mountPath: /data
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    memory: 512Mi

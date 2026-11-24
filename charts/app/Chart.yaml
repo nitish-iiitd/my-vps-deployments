@@ -1,0 +1,5 @@
+apiVersion: v2
+name: app
+description: One chart for every simple web app. Each app only supplies a values.yaml.
+type: application
+version: 1.0.0

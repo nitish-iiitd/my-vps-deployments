@@ -1,0 +1,44 @@
+# Every folder in ../apps/ that has a values.yaml becomes a deployed app,
+# using the shared chart in charts/app. Add a folder = new app. Delete it = app removed.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+        revision: main
+        files:
+          - path: clusters/vps32gb/apps/*/values.yaml
+  template:
+    metadata:
+      name: "{{ .path.basename }}"
+      finalizers:
+        # Removing an app folder also removes everything it created (including its disk).
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: default
+      sources:
+        - repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+          targetRevision: main
+          path: charts/app
+          helm:
+            releaseName: "{{ .path.basename }}"
+            valueFiles:
+              - "$values/{{ .path.path }}/values.yaml"
+        - repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: apps
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
