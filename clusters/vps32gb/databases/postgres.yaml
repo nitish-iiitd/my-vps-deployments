@@ -1,0 +1,57 @@
+# The shared PostgreSQL server for apps on vps32gb.
+#
+# Apps connect to:  postgres-rw.databases.svc.cluster.local:5432
+# Each app gets its own user (managed.roles below) and database (a Database further down).
+#
+# Admin shell:  ssh vps32gb
+#               sudo /usr/local/bin/kubectl exec -it -n databases postgres-1 -- psql
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+  namespace: databases
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4-standard-trixie
+
+  # Allow the 'postgres' admin user to log in with the password in postgres-superuser.
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: postgres-superuser
+
+  storage:
+    storageClass: local-path
+    size: 20Gi
+
+  postgresql:
+    parameters:
+      shared_buffers: 512MB
+      max_connections: "200"
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 2Gi
+
+  # One login user per app. Passwords come from sealed secrets in this folder.
+  managed:
+    roles:
+      - name: monthly
+        ensure: present
+        login: true
+        passwordSecret:
+          name: postgres-monthly
+---
+# One database per app, owned by that app's user.
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: monthly
+  namespace: databases
+spec:
+  cluster:
+    name: postgres
+  name: monthly
+  owner: monthly

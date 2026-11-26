@@ -1,0 +1,29 @@
+# The shared PostgreSQL server and its databases/users, from ../databases.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: databases
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nitish-iiitd/my-vps-deployments.git
+    targetRevision: main
+    path: clusters/vps32gb/databases
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: databases
+  syncPolicy:
+    automated:
+      # Never auto-delete the database if a file goes missing; remove it by hand on purpose.
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      # The Cluster/Database kinds need the CloudNativePG operator first; keep retrying until it's there.
+      - SkipDryRunOnMissingResource=true
+    retry:
+      limit: 20
+      backoff:
+        duration: 30s
+        maxDuration: 5m

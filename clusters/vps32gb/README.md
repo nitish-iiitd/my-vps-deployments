@@ -7,7 +7,8 @@ The server itself (OS, firewall, k3s, Argo CD) is set up by the **vps-manager** 
 
 ```
 clusters/vps32gb/
-├── argocd/       Argo CD apps: cert-manager, sealed-secrets, platform, and the "apps" ApplicationSet
+├── argocd/       Argo CD apps: cert-manager, sealed-secrets, cloudnative-pg, platform, databases, "apps" ApplicationSet
+├── databases/    the shared Postgres server, its users and databases
 ├── platform/     Let's Encrypt issuer, Argo CD's web address
 ├── apps/<name>/values.yaml   one folder per app
 └── sealed-secrets-cert.pem   public key for encrypting secrets (safe to commit)
@@ -38,6 +39,21 @@ scripts/seal-secret.sh <app> <KEY>     # asks for the value, prints an encrypted
 ```
 
 Paste the output under `secrets:` in the app's `values.yaml`. The app gets it as an environment variable.
+
+## Postgres
+
+One shared PostgreSQL 18 server (CloudNativePG), defined in `databases/postgres.yaml`.
+Apps connect to `postgres-rw.databases.svc.cluster.local:5432`.
+
+To give an app a database:
+1. Seal a password for its user (namespace `databases`, secret `postgres-<app>`, type
+   `kubernetes.io/basic-auth` with `username` + `password`) into `databases/postgres-<app>.sealed.yaml`.
+2. Add the user under `managed.roles` and a `Database` in `databases/postgres.yaml`.
+3. Put the connection URL in the app's `secrets:` (e.g. `DATABASE_URL`).
+
+Admin shell: `ssh vps32gb sudo /usr/local/bin/kubectl exec -it -n databases postgres-1 -- psql`
+
+Not yet backed up — see vps-manager's to-do list.
 
 ## Update / remove
 
