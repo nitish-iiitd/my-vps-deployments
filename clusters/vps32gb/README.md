@@ -40,6 +40,9 @@ scripts/seal-secret.sh <app> <KEY>     # asks for the value, prints an encrypted
 
 Paste the output under `secrets:` in the app's `values.yaml`. The app gets it as an environment variable.
 
+**Private images** from `ghcr.io/nitish-iiitd/...`: add `imagePullSecret: ghcr-pull` to the app's
+`values.yaml`. That login lives in `platform/ghcr-pull.sealed.yaml` (same GitHub token as vps8gb's `ghcr-pull`).
+
 ## Postgres
 
 One shared PostgreSQL 18 server (CloudNativePG), defined in `databases/postgres.yaml`.

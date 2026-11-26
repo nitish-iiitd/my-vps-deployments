@@ -1,0 +1,16 @@
+# Login for pulling private images from ghcr.io/nitish-iiitd (same token as vps8gb's ghcr-pull).
+# Apps use it with  imagePullSecret: ghcr-pull  in their values.yaml. Encrypted; only this cluster can read it.
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: ghcr-pull
+  namespace: apps
+spec:
+  encryptedData:
+    .dockerconfigjson: AgBsh5fv8IJfVTmO5+kcQqCshYl/BEZTC2bbFrAdi+cicO3dFQqNMne/FRFfQokRwV4bjLny5OPC4MzimXnXfpMfyzDIG5C4e2YScRzQCcpn4zLJwqFUeiUAjw/fSrTwsBaEKE1fogA1VRtAygPp14WPE6NJNn2mpN9UY17JL/2zgp+8+3uhfH43q5JGypu8pGnRslH4y+kX3kHmfrOMQQK2WavXl3+/oKh+KNlP5uPQ/Vq/iS5hwivzAQ0N4vD5vC9X9L+5gv9z7QXaLGh0r3Pm5UgWrL27VZSzNIV2DUzI4mYOQxYc8ROxdHvpoNN6zUXgTTiloqzFR651zwgC5U5wP1qt/RfC+kvg0oCVRphy/Z0gLLkuDjgYi4x7lVBLjamQBGJVMPLGrurGw6QYkEabidsD6+FRLdNvuYOioJtyj5qPId/RM0LvinTexiomFYwWCgb9MUdEi5sCMMjkLq3jNQwsVoyXhYAXU0Z2kdVsedzyOzbdGuJWdTYbfH2FmxpSsFB5MCOhGtcUEusUZXmFr2JFwn/GWC3RBhm5DIWYZYxYDTFAUbE5Ephs+VJ9QTVt/XZ34Jb5UGFhjFVJMuyFmFH9dGb5anwTZiSrMznXrLYoHk2JJqtY3VKC9Ha/fc6xaDbzIrMaLDBeCbHU7KCqqfc9rIeCCSgBhGbzqPiep7oa3DBaxOKkLGFQst3Rd7T+sKeqIQM+ZtkrV+wyv7sSibKZTsTOejizhpLR/tXCJ3jH6Kik3u9aeChz90Cq3qkC8+zEJKrpAUoC1mFKxrBRChkInGdbwyYy0f5fY0s0eOow4NVt8XZ2XxAPQbX8qnCnRPu3yuMvB8piEl2ECAr5JFQ72hL87YdFk946gUG4BXChiVFDZQ/7YwJ+eweSjJ4wHGneixNFD2qo13IGiH8zyVgEmMjUPFt9Rm5xG00tNvdbIqZp8lESPQ==
+  template:
+    metadata:
+      name: ghcr-pull
+      namespace: apps
+    type: kubernetes.io/dockerconfigjson

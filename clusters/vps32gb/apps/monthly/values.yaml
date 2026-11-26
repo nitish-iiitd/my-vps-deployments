@@ -4,6 +4,8 @@ tag: sha-602f710620dcf5be9eb83f7aa0b77c574d917b94   # set by monthly's CI
 port: 8000
 domain: monthly.apps.nitishsrivastava.dev
 healthPath: /api/health
+# Private GHCR image: pulled with the cluster's ghcr-pull login (platform/ghcr-pull.sealed.yaml).
+imagePullSecret: ghcr-pull
 
 env:
   MONTHLY_ENV: production
