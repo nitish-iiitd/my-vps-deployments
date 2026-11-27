@@ -1,6 +1,6 @@
 # Monthly budgeting app (repo: nitish-iiitd/monthly). All options: charts/app/values.yaml
 image: ghcr.io/nitish-iiitd/monthly
-tag: sha-2a909ce3c1a117b3a73942aa6d650ff303ecea74   # set by monthly's CI
+tag: sha-8eb9dd27ec37bcb245632d8471826bbe042fbda2   # set by monthly's CI
 port: 8000
 domain: monthly.apps.nitishsrivastava.dev
 healthPath: /api/health
